@@ -57,4 +57,4 @@
         $(view.el).html(tmpl())
         done(view.el)
 
-)(Kankan.module("boards"))
+) Kankan.module("boards")

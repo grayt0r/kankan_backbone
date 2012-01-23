@@ -26,4 +26,4 @@
         view.el.innerHTML = tmpl()
         done(view.el)
 
-)(Kankan.module("example"))
+) Kankan.module("example")

@@ -42,4 +42,4 @@
       
       Backbone.history.navigate('boards', true)
 
-)(Kankan.module("login"))
+) Kankan.module("login")
