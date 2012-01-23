@@ -17,15 +17,12 @@ config.init({
       "assets/js/libs/backbone.js"
     ],
 
-    // Application files
-    "dist/debug/js/app.js": ["app/*.js", "app/modules/*.js"],
-
     // Your CSS
     "dist/debug/css/style.css": ["assets/css/*.css"]
   },
   
   jst: {
-    "dist/debug/js/templates.js": ["app/templates/*.html"]
+    "dist/debug/js/templates.js": ["app/templates/**/*.html"]
   },
 
   min: {
@@ -40,7 +37,7 @@ config.init({
 
   watch: {
     files: ["assets/**/*", "app/**/*"],
-    tasks: "lint:files concat jst",
+    tasks: "lint:files coffee concat jst",
 
     min: {
       files: ["assets/**/*", "app/**/*"],
@@ -50,9 +47,13 @@ config.init({
 
   clean: {
     folder: "dist/"
+  },
+  
+  coffee: {
+    "dist/debug/js/app.js": ["app/*.coffee", "app/modules/*.coffee"]
   }
 
 });
 
 // Run the following tasks...
-task.registerTask("default", "clean lint:files concat jst min mincss");
+task.registerTask("default", "clean lint:files coffee concat jst min mincss");

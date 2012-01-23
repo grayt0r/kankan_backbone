@@ -16,7 +16,8 @@ task.registerBasicTask("jst", "Compile underscore templates to JST file", functi
 
   // Create JST file.
   var files = file.expand(data);
-  file.write(name, task.helper("jst", files, namespace, templateSettings));
+  var contents = task.helper("jst", files, namespace, templateSettings);
+  file.write(name, contents);
 
   // Fail task if errors were logged.
   if (task.hadErrors()) { return false; }
@@ -53,7 +54,7 @@ task.registerHelper("jst", function(files, namespace, templateSettings) {
            + "');}return __p.join('');";
 
       return new Function('obj', '_', tmpl).toString();
-  };
+  }
 
   namespace = "this['" + namespace + "']";
 
@@ -70,8 +71,8 @@ task.registerHelper("jst", function(files, namespace, templateSettings) {
         "(data, _)",
 
       "};"].join("");
-
     return namespace + "['" + filepath + "'] = " + templateFunction;
+    
   }).join("\n\n") : "";
 
   return contents;

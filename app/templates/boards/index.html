@@ -1,0 +1,14 @@
+<header>
+  <h1 class="congrats">Kankan</h1>
+  <hr>
+</header>
+
+<section>
+  <h2>Your Boards</h2>
+
+  <ul id="boards">
+    <% _.each(boards, function(b) { %>
+      <li><a data-bypass href="#" class="board_link" data-board-id="<%= b.id %>"><%= b.get('title') %></a></li>
+    <% }); %>
+  </ul>
+</section>
