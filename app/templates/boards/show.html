@@ -5,6 +5,28 @@
 
 <section>
   <h2>Board Show</h2>
-
-  <p>Board details go here... <%= 'herro' %></p>
+  
+  <h3>Lanes</h3>
+  <ul id="lanes">
+    <% _.each(lanes, function(l) { %>
+      <li><a data-bypass href="#" class="lane_link" data-lane-id="<%= l.id %>"><%= l.get('title') %></a></li>
+    <% }); %>
+  </ul>
 </section>
+
+<table class="board">
+  <thead>
+    <tr>
+      <% _.each(lanes, function(l) { %>
+        <th><%= l.get('title') %></th>
+      <% }); %>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <% _.each(lanes, function(l) { %>
+        <td id="lane_<%= l.id %>"></td>
+      <% }); %>
+    </tr>
+  </tbody>
+</table>

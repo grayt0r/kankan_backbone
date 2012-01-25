@@ -249,7 +249,7 @@ td { vertical-align: top; }
 }
 
 #main header h1 {
-  margin: 15px;
+  margin: 0px;
   display: inline-block;
   color: #333;
 }
@@ -339,4 +339,43 @@ td { vertical-align: top; }
   @page { margin: 0.5cm; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
+}
+
+
+
+
+
+
+
+
+
+
+
+.board {
+  border: 1px black;
+  width: 100%;
+}
+
+.board th, .board td {
+  width: 33.333333%;
+}
+
+.board thead th {
+  border: 2px solid black;
+  padding: 15px;
+}
+
+.board tbody td {
+  border: 2px solid black;
+  padding: 10px;
+}
+
+.card {
+  background: red;
+  border: 2px solid black;
+  color: white;
+  height: 100px;
+  margin-bottom: 10px;
+  padding: 10px;
+  width: 200px;
 }
