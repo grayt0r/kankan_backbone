@@ -22,7 +22,7 @@ Built using:
 
 ## TODOs
 
-* ~~Redirect 401s to login page
+* ~~Redirect 401s to login page~~
 * ~~Store auth token in sensible place~~
 * ~~Finish board rendering~~
 * ~~Modal dialogue for card details~~
