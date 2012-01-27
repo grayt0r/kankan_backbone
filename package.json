@@ -1,5 +1,5 @@
 {
-  "name": "Kankan Backbone",
+  "name": "kankan_backbone",
   "description": "Backbone.js client for the Kankan API",
   "author": "Ross Grayton <rossgrayton@gmail.com>",
   "version": "0.0.1",
