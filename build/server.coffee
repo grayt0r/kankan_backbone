@@ -1,29 +1,32 @@
 # Require libraries
 fs = require "fs"
 express = require "express"
-site = express.createServer()
+app = express.createServer()
 
 # Determine which dist directory to use
 dir = process.argv.length > 2 && "./dist/" + process.argv[2]
 
 # Use custom JS folder based off debug or release
-dir && site.use("/assets/js", express.static(dir + "/js"))
-dir && site.use("/assets/css", express.static(dir + "/css"))
+dir && app.use("/assets/js", express.static(dir + "/js"))
+dir && app.use("/assets/css", express.static(dir + "/css"))
 
 # Serve static files
-site.use "/app", express.static("./app")
-site.use "/assets", express.static("./assets")
-site.use "/dist", express.static("./dist")
+app.use "/app", express.static("./app")
+app.use "/assets", express.static("./assets")
+app.use "/dist", express.static("./dist")
 
 #Serve favicon.ico
-site.use express.favicon("./favicon.ico")
+app.use express.favicon("./favicon.ico")
+
+# Handle unauthorised requests
+#app.get "/401", (req, res) ->
+#  res.send '401', 401
 
 # Ensure all routes go home, client side app..
-# RAG: Easier to debug with this turned off
-site.get "/", (req, res) ->
+app.get "*", (req, res) ->
   fs.createReadStream("./index.html").pipe(res)
 
 # Actually listen
-site.listen 8000
+app.listen 8000
 
 console.log "Server listening on http://localhost:8000"

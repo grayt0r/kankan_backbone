@@ -46,29 +46,29 @@ $ ->
   Example = Kankan.module "example"
   Login = Kankan.module "login"
   Boards = Kankan.module "boards"
+  Session = Kankan.module "session"
+  
+  session = Kankan.session = new Session.Model
 
   # Defining the application router, you can attach sub routers here.
   class Router extends Backbone.Router
     routes:
       "": "login"
+      "login": "login"
       "example": "example"
 
     initialize: ->
       @boardsRouter = new Boards.Router
 
-    login: (hash) ->
+    login: ->
+      #console.log 'ROUTING: root/login'
+      if session.isAuthorised() then return Backbone.history.navigate('boards', true)
       login = new Login.Views.Login
-
-      login.render (el) ->
-        $("#main").html(el)
-
-    # TODO: Delete the example route
-    example: (hash) ->
-      tutorial = new Example.Views.Tutorial
-
-      # Attach the tutorial to the DOM
-      tutorial.render (el) ->
-        $("#main").html(el)
+      login.render()
+    
+    logout: ->
+      #console.log 'ROUTING: root/logout'
+      session.destroy()
 
   # Define your master router on the application namespace and trigger all
   # navigation from this instance.

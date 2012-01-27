@@ -1,7 +1,3 @@
-// This is the main Backbone Boilerplate build configuration file.
-//
-// This is a JavaScript file, you can define any functions you would like in
-// here.
 config.init({
 
   lint: {
@@ -14,11 +10,15 @@ config.init({
     "dist/debug/js/libs.js": [
       "assets/js/libs/jquery.js",
       "assets/js/libs/underscore.js",
-      "assets/js/libs/backbone.js"
+      "assets/js/libs/backbone.js",
+      "assets/js/libs/bootstrap-modal.js"
     ],
 
     // Your CSS
-    "dist/debug/css/style.css": ["assets/css/*.css"]
+    "dist/debug/css/style.css": [
+      "assets/css/bootstrap.css",
+      "assets/css/kankan.css"
+    ]
   },
   
   jst: {
@@ -37,7 +37,7 @@ config.init({
 
   watch: {
     files: ["assets/**/*", "app/**/*"],
-    tasks: "lint:files coffee concat jst",
+    tasks: "clean lint:files coffee stylus concat jst",
 
     min: {
       files: ["assets/**/*", "app/**/*"],
@@ -51,9 +51,13 @@ config.init({
   
   coffee: {
     "dist/debug/js/app.js": ["app/*.coffee", "app/modules/*.coffee"]
+  },
+  
+  stylus: {
+    "assets/css/kankan.css": "assets/stylus/kankan.styl"
   }
 
 });
 
 // Run the following tasks...
-task.registerTask("default", "clean lint:files coffee concat jst min mincss");
+task.registerTask("default", "clean lint:files coffee stylus concat jst min mincss");

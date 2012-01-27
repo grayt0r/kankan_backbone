@@ -15,12 +15,15 @@
       'boards': 'index',
       'boards/:id': 'show'
 
-    index: (hash) ->
-      boards = new Boards.Collection
-      index = new Boards.Views.Index(boards)
-      boards.fetch()
+    index: ->
+      #console.log 'ROUTING: boards/index'
+      if Kankan.session.enforceAuthorisation()
+        boards = new Boards.Collection
+        index = new Boards.Views.Index(boards)
+        boards.fetch()
     
     show: (id) ->
+      #console.log 'ROUTING: boards/show'
       lanes = new Lanes.Collection(null, { boardId: id })
       cards = new Cards.Collection(null, { boardId: id })
       show = new Boards.Views.Show(lanes, cards)
@@ -53,6 +56,7 @@
   class Boards.Views.Show extends Backbone.View
     template: '/app/templates/boards/show.html'
     cardTemplate: '/app/templates/boards/card.html'
+    cardModalTemplate: '/app/templates/boards/cardModal.html'
     
     events:
       'dblclick .card': 'showCard'
@@ -63,18 +67,21 @@
       @lanes.bind 'reset', @addAllLanes, @
       @cards.bind 'reset', @addAllCards, @
     
-    render: (done) ->
+    render: ->
       view = @
       
-      Kankan.fetchTemplate this.template, (tmpl) ->
-        $(view.el).html(tmpl({ lanes: view.lanes.models }))
-        done(view.el)
+      Kankan.fetchTemplate @template, (tmpl) ->
+        $(view.el).html tmpl({ lanes: view.lanes.models })
+        $("#main").html view.el
+        
+        @$('#my-modal')
+          .modal
+            backdrop: true
       
       @cards.fetch()
     
     addAllLanes: (lanes) ->
-      @render (el) ->
-        $("#main").html(el)
+      @render()
     
     addAllCards: (cards) ->
       $.each cards.models, (i, c) =>
@@ -84,7 +91,9 @@
     showCard: (ev) ->
       cardId = $(ev.target).attr('data-card-id')
       card = @cards.get(cardId)
-      cardTitle = card.get('title')
-      alert cardTitle
+      
+      Kankan.fetchTemplate @cardModalTemplate, (tmpl2) ->
+        @$('#my-modal .modal-contents').html tmpl2({ c: card })
+        @$('#my-modal').modal 'show'
 
 ) Kankan.module("boards")
