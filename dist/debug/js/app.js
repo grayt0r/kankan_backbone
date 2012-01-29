@@ -214,7 +214,7 @@
       Show.prototype.cardModalTemplate = '/app/templates/boards/cardModal.html';
 
       Show.prototype.events = {
-        'dblclick .card': 'showCard'
+        'click .card': 'showCard'
       };
 
       Show.prototype.initialize = function(lanes, cards) {

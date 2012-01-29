@@ -59,7 +59,7 @@
     cardModalTemplate: '/app/templates/boards/cardModal.html'
     
     events:
-      'dblclick .card': 'showCard'
+      'click .card': 'showCard'
     
     initialize: (lanes, cards) ->
       @lanes = lanes
