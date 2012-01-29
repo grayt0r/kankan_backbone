@@ -17,11 +17,12 @@ Built using:
 
 ## Installation
 
-* git clone git://github.com/grayt0r/kanban_backbone.git
-* cd kanban_backbone
+* Install the [Kankan API](https://github.com/grayt0r/kankan_api)
+* git clone git://github.com/grayt0r/kankan_backbone.git
+* cd kankan_backbone
 * npm install -d
 * coffee build/server debug
-* Open http://0.0.0.0:8000 in your browser and check you see the login page
+* Open http://localhost:8000 in your browser and check you see the login page
 
 ## TODOs
 
@@ -33,7 +34,7 @@ Built using:
 * ~~Persist auth token across page refreshes - localstorage?~~
 * ~~Check direct access to a board show page can retrieve the board json~~
 * ~~Document install steps~~
-* Add some dummy data to the default Kankan API install
+* ~~Add some dummy data to the default Kankan API install~~
 * Document build steps
 * Add validations to API and client
 * Port the build process to CoffeeScript
