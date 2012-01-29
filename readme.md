@@ -1,9 +1,9 @@
 Kankan
 ====================
 
-<p style="color:red;">Please note that this project is in the very early days of development. There is likely to be bugs and a lot of the functionality is yet to be implemented - see the TODOs below for more information.</p>
-
 Backbone.js client for the [Kankan API](https://github.com/grayt0r/kankan_api).
+
+Please note that this project is in the very early days of development. There is likely to be bugs and a lot of the functionality is yet to be implemented - see the TODOs below for more information.
 
 Built using:
 
@@ -12,6 +12,7 @@ Built using:
 * [Bootstrap](http://twitter.github.com/bootstrap/)
 * [CoffeeScript](http://coffeescript.org/)
 * [jQuery](http://jquery.com/)
+* [Stylus](http://learnboost.github.com/stylus/) and [nib](http://visionmedia.github.com/nib/)
 
 
 ## Installation
