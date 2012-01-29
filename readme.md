@@ -1,6 +1,10 @@
 Kankan
 ====================
 
+<div style="color:red;">
+Please note that this project is in the very early days of development. There is likely to be bugs and a lot of the functionality is yet to be implemented - see the TODOs below for more information.
+</div>
+
 Backbone.js client for the [Kankan API](https://github.com/grayt0r/kankan_api).
 
 Built using:
