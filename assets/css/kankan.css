@@ -14,12 +14,6 @@
   padding-right: 40px;
   background: #f8fafc;
 }
-#main a {
-  color: #0cf;
-}
-#main a:hover {
-  color: #fe57a1;
-}
 #main img {
   width: 320px;
   height: auto;
