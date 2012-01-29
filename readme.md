@@ -24,6 +24,8 @@ Built using:
 * coffee build/server debug
 * Open http://localhost:8000 in your browser and check you see the login page
 
+If nib is installed somewhere other than /usr/local/lib/node_modules/nib you'll also need update build/tasks/stylus/stylus.js to reflect the correct path. This will be fixed in a later version.
+
 ## TODOs
 
 * ~~Redirect 401s to login page~~

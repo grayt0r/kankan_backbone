@@ -12,6 +12,7 @@ task.registerBasicTask("stylus", "Compiles styl files to CSS", function(files, n
   var done = this.async(),
       exec = require('child_process').exec;
   
+  // TODO: Move location of nib to a settings file
   var stylusCommand = 'stylus < ' + files + ' > ' + name + ' -u /usr/local/lib/node_modules/nib';
   
   // Compile the files to JS
