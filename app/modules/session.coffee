@@ -39,7 +39,7 @@
       if currentUser
         @email = currentUser.email
         @token = currentUser.token
-        @addAuthTokenToAjaxCalls()
+        @addHeaderToAjaxCalls()
       else
         @email = ''
         @token = ''
@@ -96,11 +96,13 @@
           callback.call self, 'Login error'
         dataType: 'json'
     
-    addAuthTokenToAjaxCalls: ->
+    addHeaderToAjaxCalls: ->
       # Set jQuery ajax defaults for CORs
       $.ajaxSetup
         headers: { "X-Requested-With": "XMLHttpRequest" }
-        data: { auth_token: @token }
+        beforeSend: (jqXHR, s) ->
+          separator = if /\?/.test(s.url) then '&' else '?'
+          s.url += "#{separator}auth_token=#{Kankan.session.token}"
     
     destroy: ->
       session.destroy @

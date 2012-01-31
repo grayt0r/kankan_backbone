@@ -24,7 +24,7 @@
       Kankan.session.authenticate email, password, (err) ->
         # TODO: Handle errors
         if !err
-          Kankan.session.addAuthTokenToAjaxCalls()
+          Kankan.session.addHeaderToAjaxCalls()
           Backbone.history.navigate 'boards', true
         else
           console.log 'login error', err

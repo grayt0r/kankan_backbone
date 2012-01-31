@@ -1,4 +1,11 @@
 <div class="container">
+  <h2><%= board.get('title') %></h2>
+  
+  <form>
+    <input type="text" id="cardTitle" placeholder="Card Title">
+    <input id="addCardButton" class="btn success" type="submit" value="Add Card">
+  </form>
+  
   <table class="board">
     <thead>
       <tr>
@@ -17,7 +24,7 @@
   </table>
 </div>
 
-<div id="my-modal" class="modal hide fade">
+<div id="cardModal" class="modal hide fade">
   <a data-bypass class="close" href="#">×</a>
   <div class="modal-contents"></div>
 </div>

@@ -8,26 +8,31 @@
   
   class Boards.Collection extends Backbone.Collection
     model: Boards.Model
-    url: 'http://localhost:3000/api/v1/boards'
+    url: ->
+      "http://localhost:3000/api/v1/boards"
   
   class Boards.Router extends Backbone.Router    
     routes:
       'boards': 'index',
       'boards/:id': 'show'
+      
+    boards: new Boards.Collection
 
     index: ->
       #console.log 'ROUTING: boards/index'
       if Kankan.session.enforceAuthorisation()
-        boards = new Boards.Collection
-        index = new Boards.Views.Index(boards)
-        boards.fetch()
+        #boards = new Boards.Collection
+        index = new Boards.Views.Index({ collection: @boards })
     
     show: (id) ->
       #console.log 'ROUTING: boards/show'
-      lanes = new Lanes.Collection(null, { boardId: id })
-      cards = new Cards.Collection(null, { boardId: id })
-      show = new Boards.Views.Show(lanes, cards)
-      lanes.fetch()
+      board = @boards.get(id) 
+      
+      if Kankan.session.enforceAuthorisation()
+        lanes = new Lanes.Collection(null, { boardId: id })
+        cards = new Cards.Collection(null, { boardId: id })
+        show = new Boards.Views.Show({ model: board, collection: lanes })
+        cardsList = new Boards.Views.CardsList({ model: board, collection: cards }, lanes)
 
   class Boards.Views.Index extends Backbone.View
     template: '/app/templates/boards/index.html'
@@ -35,19 +40,18 @@
     events:
       'click .board_link': 'showBoard'
     
-    initialize: (boards) ->
-      boards.bind('reset', this.addAll, this)
+    initialize: ->
+      boards = @collection
+      boards.bind 'reset', @render, @
+      boards.bind 'add', @render, @
+      boards.bind 'remove', @render, @
+      boards.fetch()
 
-    render: (boards, done) ->
+    render: ->
       view = this
-
-      Kankan.fetchTemplate this.template, (tmpl) ->
-        view.el.innerHTML = tmpl({ boards: boards.models })
-        done(view.el)
-    
-    addAll: (boards) ->
-      this.render boards, (el) ->
-        $("#main").html(el)
+      Kankan.fetchTemplate @template, (tmpl) ->
+        $(view.el).html tmpl({ boards: view.collection.models })
+        $("#main").html view.el
     
     showBoard: (ev) ->
       ev.preventDefault()
@@ -55,45 +59,79 @@
   
   class Boards.Views.Show extends Backbone.View
     template: '/app/templates/boards/show.html'
-    cardTemplate: '/app/templates/boards/card.html'
-    cardModalTemplate: '/app/templates/boards/cardModal.html'
     
-    events:
-      'click .card': 'showCard'
-    
-    initialize: (lanes, cards) ->
-      @lanes = lanes
-      @cards = cards
-      @lanes.bind 'reset', @addAllLanes, @
-      @cards.bind 'reset', @addAllCards, @
+    initialize: ->
+      lanes = @collection
+      lanes.bind 'reset', @render, @
+      lanes.bind 'add', @render, @
+      lanes.bind 'remove', @render, @
+      lanes.fetch()
     
     render: ->
       view = @
-      
       Kankan.fetchTemplate @template, (tmpl) ->
-        $(view.el).html tmpl({ lanes: view.lanes.models })
+        $(view.el).html tmpl({ board: view.model, lanes: view.collection.models })
         $("#main").html view.el
         
-        @$('#my-modal')
-          .modal
-            backdrop: true
+        @$('#cardModal').modal { backdrop: true, keyboard: true }
+        
+        app.trigger 'kankan.lanes.rendered'
+  
+  class Boards.Views.CardsList extends Backbone.View
+    template: '/app/templates/boards/cardModal.html'
+    
+    initialize: (opts, lanes) ->
+      @lanes = lanes
+      cards = @collection
+      cards.bind 'reset', @addAll, @
+      cards.bind 'add', @addOne, @
       
-      @cards.fetch()
+      view = @
+      app.bind 'kankan.lanes.rendered', ->
+        $('form').on 'submit', view.createCard
+        $('.board').on 'click', '.card', view.showCard
+        cards.fetch()
     
-    addAllLanes: (lanes) ->
-      @render()
+    addAll: ->
+      @collection.each @addOne
     
-    addAllCards: (cards) ->
-      $.each cards.models, (i, c) =>
-        Kankan.fetchTemplate this.cardTemplate, (tmpl) =>
-          @$("#lane_#{c.get('lane_id')}").append(tmpl({ card: c }))
+    addOne: (card) ->
+      view = new Boards.Views.Card({ model: card })
+      view.render (el) ->
+        @$("#lane_#{card.get('lane_id')}").append el
     
-    showCard: (ev) ->
-      cardId = $(ev.target).attr('data-card-id')
-      card = @cards.get(cardId)
-      
-      Kankan.fetchTemplate @cardModalTemplate, (tmpl2) ->
-        @$('#my-modal .modal-contents').html tmpl2({ c: card })
-        @$('#my-modal').modal 'show'
+    createCard: (ev) =>
+      ev.preventDefault()
+      card = @collection.create({
+        title: $('#cardTitle').val(),
+        lane_id: @lanes.first().id
+      })
+      $('#cardTitle').val('')
+      card
+    
+    showCard: (ev) =>
+      cardId = $(ev.target).attr 'data-card-id'
+      card = @collection.get cardId
+
+      Kankan.fetchTemplate @template, (tmpl) ->
+        @$('#cardModal .modal-contents').html tmpl({ card: card })
+        @$('#cardModal').modal 'show'
+  
+  class Boards.Views.Card extends Backbone.View
+    template: '/app/templates/boards/card.html'
+
+    initialize: ->
+      @model.bind 'change', @render, @
+      @model.bind 'destroy', @remove, @
+
+    render: (done) ->
+      view = @
+      Kankan.fetchTemplate @template, (tmpl) ->
+        $(view.el).html tmpl({ card: view.model })
+        done(view.el)
+    
+    addOne: ->
+      Kankan.fetchTemplate this.cardTemplate, (tmpl) =>
+        
 
 ) Kankan.module("boards")

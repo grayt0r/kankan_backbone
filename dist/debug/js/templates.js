@@ -5,7 +5,7 @@ var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.pu
 }(data, _)};
 
 this['JST']['app/templates/boards/cardModal.html'] = function(data) { return function (obj,_) {
-var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<p>Title: ', c.get('title') ,'</p>\n<p>Created: ', c.get('created_at') ,'</p>\n<p>Updated: ', c.get('updated_at') ,'</p>');}return __p.join('');
+var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h2>', card.get('title') ,'</h2>\n<p>', card.get('notes') ,'</p>');}return __p.join('');
 }(data, _)};
 
 this['JST']['app/templates/boards/index.html'] = function(data) { return function (obj,_) {
@@ -13,7 +13,7 @@ var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.pu
 }(data, _)};
 
 this['JST']['app/templates/boards/show.html'] = function(data) { return function (obj,_) {
-var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="container">\n  <table class="board">\n    <thead>\n      <tr>\n        '); _.each(lanes, function(l) { ;__p.push('\n          <th>', l.get('title') ,'</th>\n        '); }); ;__p.push('\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        '); _.each(lanes, function(l) { ;__p.push('\n          <td id="lane_', l.id ,'"></td>\n        '); }); ;__p.push('\n      </tr>\n    </tbody>\n  </table>\n</div>\n\n<div id="my-modal" class="modal hide fade">\n  <a data-bypass class="close" href="#">×</a>\n  <div class="modal-contents"></div>\n</div>');}return __p.join('');
+var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="container">\n  <h2>', board.get('title') ,'</h2>\n  \n  <form>\n    <input type="text" id="cardTitle" placeholder="Card Title">\n    <input id="addCardButton" class="btn success" type="submit" value="Add Card">\n  </form>\n  \n  <table class="board">\n    <thead>\n      <tr>\n        '); _.each(lanes, function(l) { ;__p.push('\n          <th>', l.get('title') ,'</th>\n        '); }); ;__p.push('\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        '); _.each(lanes, function(l) { ;__p.push('\n          <td id="lane_', l.id ,'"></td>\n        '); }); ;__p.push('\n      </tr>\n    </tbody>\n  </table>\n</div>\n\n<div id="cardModal" class="modal hide fade">\n  <a data-bypass class="close" href="#">×</a>\n  <div class="modal-contents"></div>\n</div>');}return __p.join('');
 }(data, _)};
 
 this['JST']['app/templates/example.html'] = function(data) { return function (obj,_) {

@@ -1,63 +1,12 @@
-#main {
-  margin: 40px;
-  font-size: 14px;
-}
-#main pre {
-  min-width: 320px;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  color: #333;
-  font-weight: normal;
-  font-size: 12px;
-  display: inline-block;
-  padding-right: 40px;
-  background: #f8fafc;
-}
-#main img {
-  width: 320px;
-  height: auto;
-}
-#main p {
-  line-height: 28px;
-}
-#main ul.nested {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-#main ul li {
-  line-height: 28px;
-}
-#main header h1 {
-  display: inline-block;
-  color: #333;
-}
-#main header h2:not(.congrats) {
-  color: #666;
-  margin: 0;
-  padding: 0;
-}
-#main header .congrats {
-  padding-bottom: 0;
-  margin-bottom: 0;
-  color: #0cf;
-  display: inline-block;
-  font-size: 28px;
-}
-#main .topic {
-  color: #ccc;
-}
-#main .clues {
-  color: #fe57a1;
-}
 body {
   background: #c4d4cb;
+  font-size: 14px;
   padding-top: 40px;
 }
 h2 {
   color: #55665e;
   font-size: 36px;
-  margin: 20px 0;
+  margin: 40px 0 30px 0;
 }
 .login input {
   display: block;
@@ -66,8 +15,11 @@ h2 {
 .board_link {
   color: #55665e;
 }
+.board {
+  margin-top: 20px;
+}
 .board th {
-  font-size: 2em;
+  font-size: 16px;
   padding-bottom: 20px;
 }
 .board td {
@@ -93,7 +45,14 @@ h2 {
   border: 5px solid #542733;
   padding: 20px;
 }
-#my-modal .close {
+.modal h2 {
+  font-size: 24px;
+  margin: 0 0 10px 0;
+}
+#cardModal .close {
   margin: 0;
+}
+#addCardButton {
+  margin-left: 3px;
 }
 

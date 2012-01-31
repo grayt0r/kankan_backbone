@@ -1,6 +1,7 @@
 (function() {
   var __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.Kankan = {
     module: (function() {
@@ -114,7 +115,9 @@
 
       Collection.prototype.model = Boards.Model;
 
-      Collection.prototype.url = 'http://localhost:3000/api/v1/boards';
+      Collection.prototype.url = function() {
+        return "http://localhost:3000/api/v1/boards";
+      };
 
       return Collection;
 
@@ -132,25 +135,36 @@
         'boards/:id': 'show'
       };
 
+      Router.prototype.boards = new Boards.Collection;
+
       Router.prototype.index = function() {
-        var boards, index;
+        var index;
         if (Kankan.session.enforceAuthorisation()) {
-          boards = new Boards.Collection;
-          index = new Boards.Views.Index(boards);
-          return boards.fetch();
+          return index = new Boards.Views.Index({
+            collection: this.boards
+          });
         }
       };
 
       Router.prototype.show = function(id) {
-        var cards, lanes, show;
-        lanes = new Lanes.Collection(null, {
-          boardId: id
-        });
-        cards = new Cards.Collection(null, {
-          boardId: id
-        });
-        show = new Boards.Views.Show(lanes, cards);
-        return lanes.fetch();
+        var board, cards, cardsList, lanes, show;
+        board = this.boards.get(id);
+        if (Kankan.session.enforceAuthorisation()) {
+          lanes = new Lanes.Collection(null, {
+            boardId: id
+          });
+          cards = new Cards.Collection(null, {
+            boardId: id
+          });
+          show = new Boards.Views.Show({
+            model: board,
+            collection: lanes
+          });
+          return cardsList = new Boards.Views.CardsList({
+            model: board,
+            collection: cards
+          }, lanes);
+        }
       };
 
       return Router;
@@ -170,24 +184,23 @@
         'click .board_link': 'showBoard'
       };
 
-      Index.prototype.initialize = function(boards) {
-        return boards.bind('reset', this.addAll, this);
+      Index.prototype.initialize = function() {
+        var boards;
+        boards = this.collection;
+        boards.bind('reset', this.render, this);
+        boards.bind('add', this.render, this);
+        boards.bind('remove', this.render, this);
+        return boards.fetch();
       };
 
-      Index.prototype.render = function(boards, done) {
+      Index.prototype.render = function() {
         var view;
         view = this;
         return Kankan.fetchTemplate(this.template, function(tmpl) {
-          view.el.innerHTML = tmpl({
-            boards: boards.models
-          });
-          return done(view.el);
-        });
-      };
-
-      Index.prototype.addAll = function(boards) {
-        return this.render(boards, function(el) {
-          return $("#main").html(el);
+          $(view.el).html(tmpl({
+            boards: view.collection.models
+          }));
+          return $("#main").html(view.el);
         });
       };
 
@@ -199,7 +212,7 @@
       return Index;
 
     })(Backbone.View);
-    return Boards.Views.Show = (function(_super) {
+    Boards.Views.Show = (function(_super) {
 
       __extends(Show, _super);
 
@@ -209,64 +222,133 @@
 
       Show.prototype.template = '/app/templates/boards/show.html';
 
-      Show.prototype.cardTemplate = '/app/templates/boards/card.html';
-
-      Show.prototype.cardModalTemplate = '/app/templates/boards/cardModal.html';
-
-      Show.prototype.events = {
-        'click .card': 'showCard'
-      };
-
-      Show.prototype.initialize = function(lanes, cards) {
-        this.lanes = lanes;
-        this.cards = cards;
-        this.lanes.bind('reset', this.addAllLanes, this);
-        return this.cards.bind('reset', this.addAllCards, this);
+      Show.prototype.initialize = function() {
+        var lanes;
+        lanes = this.collection;
+        lanes.bind('reset', this.render, this);
+        lanes.bind('add', this.render, this);
+        lanes.bind('remove', this.render, this);
+        return lanes.fetch();
       };
 
       Show.prototype.render = function() {
         var view;
         view = this;
-        Kankan.fetchTemplate(this.template, function(tmpl) {
+        return Kankan.fetchTemplate(this.template, function(tmpl) {
           $(view.el).html(tmpl({
-            lanes: view.lanes.models
+            board: view.model,
+            lanes: view.collection.models
           }));
           $("#main").html(view.el);
-          return this.$('#my-modal').modal({
-            backdrop: true
+          this.$('#cardModal').modal({
+            backdrop: true,
+            keyboard: true
           });
-        });
-        return this.cards.fetch();
-      };
-
-      Show.prototype.addAllLanes = function(lanes) {
-        return this.render();
-      };
-
-      Show.prototype.addAllCards = function(cards) {
-        var _this = this;
-        return $.each(cards.models, function(i, c) {
-          return Kankan.fetchTemplate(_this.cardTemplate, function(tmpl) {
-            return _this.$("#lane_" + (c.get('lane_id'))).append(tmpl({
-              card: c
-            }));
-          });
-        });
-      };
-
-      Show.prototype.showCard = function(ev) {
-        var card, cardId;
-        cardId = $(ev.target).attr('data-card-id');
-        card = this.cards.get(cardId);
-        return Kankan.fetchTemplate(this.cardModalTemplate, function(tmpl2) {
-          this.$('#my-modal .modal-contents').html(tmpl2({
-            c: card
-          }));
-          return this.$('#my-modal').modal('show');
+          return app.trigger('kankan.lanes.rendered');
         });
       };
 
       return Show;
+
+    })(Backbone.View);
+    Boards.Views.CardsList = (function(_super) {
+
+      __extends(CardsList, _super);
+
+      function CardsList() {
+        this.showCard = __bind(this.showCard, this);
+        this.createCard = __bind(this.createCard, this);
+        CardsList.__super__.constructor.apply(this, arguments);
+      }
+
+      CardsList.prototype.template = '/app/templates/boards/cardModal.html';
+
+      CardsList.prototype.initialize = function(opts, lanes) {
+        var cards, view;
+        this.lanes = lanes;
+        cards = this.collection;
+        cards.bind('reset', this.addAll, this);
+        cards.bind('add', this.addOne, this);
+        view = this;
+        return app.bind('kankan.lanes.rendered', function() {
+          $('form').on('submit', view.createCard);
+          $('.board').on('click', '.card', view.showCard);
+          return cards.fetch();
+        });
+      };
+
+      CardsList.prototype.addAll = function() {
+        return this.collection.each(this.addOne);
+      };
+
+      CardsList.prototype.addOne = function(card) {
+        var view;
+        view = new Boards.Views.Card({
+          model: card
+        });
+        return view.render(function(el) {
+          return this.$("#lane_" + (card.get('lane_id'))).append(el);
+        });
+      };
+
+      CardsList.prototype.createCard = function(ev) {
+        var card;
+        ev.preventDefault();
+        card = this.collection.create({
+          title: $('#cardTitle').val(),
+          lane_id: this.lanes.first().id
+        });
+        $('#cardTitle').val('');
+        return card;
+      };
+
+      CardsList.prototype.showCard = function(ev) {
+        var card, cardId;
+        cardId = $(ev.target).attr('data-card-id');
+        card = this.collection.get(cardId);
+        return Kankan.fetchTemplate(this.template, function(tmpl) {
+          this.$('#cardModal .modal-contents').html(tmpl({
+            card: card
+          }));
+          return this.$('#cardModal').modal('show');
+        });
+      };
+
+      return CardsList;
+
+    })(Backbone.View);
+    return Boards.Views.Card = (function(_super) {
+
+      __extends(Card, _super);
+
+      function Card() {
+        Card.__super__.constructor.apply(this, arguments);
+      }
+
+      Card.prototype.template = '/app/templates/boards/card.html';
+
+      Card.prototype.initialize = function() {
+        this.model.bind('change', this.render, this);
+        return this.model.bind('destroy', this.remove, this);
+      };
+
+      Card.prototype.render = function(done) {
+        var view;
+        view = this;
+        return Kankan.fetchTemplate(this.template, function(tmpl) {
+          $(view.el).html(tmpl({
+            card: view.model
+          }));
+          return done(view.el);
+        });
+      };
+
+      Card.prototype.addOne = function() {
+        var _this = this;
+        return Kankan.fetchTemplate(this.cardTemplate, function(tmpl) {});
+      };
+
+      return Card;
 
     })(Backbone.View);
   })(Kankan.module("boards"));
@@ -281,6 +363,10 @@
       function Model() {
         Model.__super__.constructor.apply(this, arguments);
       }
+
+      Model.prototype.url = function() {
+        return "http://localhost:3000/api/v1/cards";
+      };
 
       return Model;
 
@@ -317,31 +403,6 @@
     })(Backbone.Collection);
   })(Kankan.module("cards"));
 
-  (function(Example) {
-    return Example.Views.Tutorial = (function(_super) {
-
-      __extends(Tutorial, _super);
-
-      function Tutorial() {
-        Tutorial.__super__.constructor.apply(this, arguments);
-      }
-
-      Tutorial.prototype.template = "app/templates/example.html";
-
-      Tutorial.prototype.render = function(done) {
-        var view;
-        view = this;
-        return Kankan.fetchTemplate(this.template, function(tmpl) {
-          view.el.innerHTML = tmpl();
-          return done(view.el);
-        });
-      };
-
-      return Tutorial;
-
-    })(Backbone.View);
-  })(Kankan.module("example"));
-
   (function(Lanes) {
     var app;
     app = Kankan.app;
@@ -352,6 +413,10 @@
       function Model() {
         Model.__super__.constructor.apply(this, arguments);
       }
+
+      Model.prototype.url = function() {
+        return "http://localhost:3000/api/v1/lanes";
+      };
 
       return Model;
 
@@ -422,7 +487,7 @@
         password = this.$('input[name=password]').val();
         return Kankan.session.authenticate(email, password, function(err) {
           if (!err) {
-            Kankan.session.addAuthTokenToAjaxCalls();
+            Kankan.session.addHeaderToAjaxCalls();
             return Backbone.history.navigate('boards', true);
           } else {
             return console.log('login error', err);
@@ -487,7 +552,7 @@
         if (currentUser) {
           this.email = currentUser.email;
           this.token = currentUser.token;
-          this.addAuthTokenToAjaxCalls();
+          this.addHeaderToAjaxCalls();
         } else {
           this.email = '';
           this.token = '';
@@ -560,13 +625,15 @@
         });
       };
 
-      Model.prototype.addAuthTokenToAjaxCalls = function() {
+      Model.prototype.addHeaderToAjaxCalls = function() {
         return $.ajaxSetup({
           headers: {
             "X-Requested-With": "XMLHttpRequest"
           },
-          data: {
-            auth_token: this.token
+          beforeSend: function(jqXHR, s) {
+            var separator;
+            separator = /\?/.test(s.url) ? '&' : '?';
+            return s.url += "" + separator + "auth_token=" + Kankan.session.token;
           }
         });
       };

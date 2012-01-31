@@ -60,4 +60,5 @@ config.init({
 });
 
 // Run the following tasks...
-task.registerTask("default", "clean lint:files coffee stylus concat jst min mincss");
+task.registerTask("default", "clean lint:files coffee stylus concat jst");
+task.registerTask("prod", "clean lint:files coffee stylus concat jst min mincss");

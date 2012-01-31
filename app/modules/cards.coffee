@@ -3,6 +3,8 @@
   app = Kankan.app
 
   class Cards.Model extends Backbone.Model
+    url: ->
+      "http://localhost:3000/api/v1/cards"
   
   class Cards.Collection extends Backbone.Collection
     model: Cards.Model
