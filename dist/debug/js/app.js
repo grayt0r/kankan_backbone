@@ -115,9 +115,7 @@
 
       Collection.prototype.model = Boards.Model;
 
-      Collection.prototype.url = function() {
-        return "http://localhost:3000/api/v1/boards";
-      };
+      Collection.prototype.url = "http://localhost:3000/api/v1/boards";
 
       return Collection;
 
@@ -148,8 +146,8 @@
 
       Router.prototype.show = function(id) {
         var board, cards, cardsList, lanes, show;
-        board = this.boards.get(id);
         if (Kankan.session.enforceAuthorisation()) {
+          board = this.boards.get(id);
           lanes = new Lanes.Collection(null, {
             boardId: id
           });
@@ -364,9 +362,7 @@
         Model.__super__.constructor.apply(this, arguments);
       }
 
-      Model.prototype.url = function() {
-        return "http://localhost:3000/api/v1/cards";
-      };
+      Model.prototype.url = "http://localhost:3000/api/v1/cards";
 
       return Model;
 
@@ -414,9 +410,7 @@
         Model.__super__.constructor.apply(this, arguments);
       }
 
-      Model.prototype.url = function() {
-        return "http://localhost:3000/api/v1/lanes";
-      };
+      Model.prototype.url = "http://localhost:3000/api/v1/lanes";
 
       return Model;
 
@@ -487,7 +481,7 @@
         password = this.$('input[name=password]').val();
         return Kankan.session.authenticate(email, password, function(err) {
           if (!err) {
-            Kankan.session.addHeaderToAjaxCalls();
+            Kankan.session.addHeaderAndAuthTokenToAjaxCalls();
             return Backbone.history.navigate('boards', true);
           } else {
             return console.log('login error', err);
@@ -552,7 +546,7 @@
         if (currentUser) {
           this.email = currentUser.email;
           this.token = currentUser.token;
-          this.addHeaderToAjaxCalls();
+          this.addHeaderAndAuthTokenToAjaxCalls();
         } else {
           this.email = '';
           this.token = '';
@@ -625,7 +619,7 @@
         });
       };
 
-      Model.prototype.addHeaderToAjaxCalls = function() {
+      Model.prototype.addHeaderAndAuthTokenToAjaxCalls = function() {
         return $.ajaxSetup({
           headers: {
             "X-Requested-With": "XMLHttpRequest"
