@@ -3,8 +3,7 @@
   app = Kankan.app
 
   class Lanes.Model extends Backbone.Model
-    url: ->
-      "http://localhost:3000/api/v1/lanes"
+    url: "http://localhost:3000/api/v1/lanes"
   
   class Lanes.Collection extends Backbone.Collection
     model: Lanes.Model

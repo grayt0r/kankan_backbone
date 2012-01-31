@@ -8,8 +8,7 @@
   
   class Boards.Collection extends Backbone.Collection
     model: Boards.Model
-    url: ->
-      "http://localhost:3000/api/v1/boards"
+    url: "http://localhost:3000/api/v1/boards"
   
   class Boards.Router extends Backbone.Router    
     routes:
@@ -21,14 +20,12 @@
     index: ->
       #console.log 'ROUTING: boards/index'
       if Kankan.session.enforceAuthorisation()
-        #boards = new Boards.Collection
         index = new Boards.Views.Index({ collection: @boards })
     
     show: (id) ->
       #console.log 'ROUTING: boards/show'
-      board = @boards.get(id) 
-      
       if Kankan.session.enforceAuthorisation()
+        board = @boards.get(id)
         lanes = new Lanes.Collection(null, { boardId: id })
         cards = new Cards.Collection(null, { boardId: id })
         show = new Boards.Views.Show({ model: board, collection: lanes })

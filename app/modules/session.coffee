@@ -39,7 +39,7 @@
       if currentUser
         @email = currentUser.email
         @token = currentUser.token
-        @addHeaderToAjaxCalls()
+        @addHeaderAndAuthTokenToAjaxCalls()
       else
         @email = ''
         @token = ''
@@ -96,7 +96,7 @@
           callback.call self, 'Login error'
         dataType: 'json'
     
-    addHeaderToAjaxCalls: ->
+    addHeaderAndAuthTokenToAjaxCalls: ->
       # Set jQuery ajax defaults for CORs
       $.ajaxSetup
         headers: { "X-Requested-With": "XMLHttpRequest" }
