@@ -1,7 +1,10 @@
 # Require libraries
 fs = require "fs"
 express = require "express"
-app = express.createServer()
+
+app = express.createServer
+  key: fs.readFileSync './keys/server.key'
+  cert: fs.readFileSync './keys/server.crt'
 
 # Determine which dist directory to use
 dir = process.argv.length > 2 && "./dist/" + process.argv[2]
